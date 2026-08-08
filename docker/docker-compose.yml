@@ -5,9 +5,9 @@ services:
     image: postgres:15-alpine
     container_name: findyourplaces-db
     environment:
-      POSTGRES_DB: findyourplace
-      POSTGRES_USER: yourplace
-      POSTGRES_PASSWORD: yourplace
+      POSTGRES_DB: ${DB}
+      POSTGRES_USER: ${USER_DB}
+      POSTGRES_PASSWORD: ${PASSWORD_DB}
     ports:
       - "3355:5432"
     volumes:

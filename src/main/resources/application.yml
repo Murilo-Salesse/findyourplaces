@@ -3,9 +3,9 @@ spring:
     name: findyourplaces
 
   datasource:
-    url: jdbc:postgresql://localhost:3355/findyourplace
-    username: yourplace
-    password: yourplace
+    url: ${URL_DB}
+    username: ${USER}
+    password: ${PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
