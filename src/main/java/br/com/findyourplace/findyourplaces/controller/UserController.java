@@ -1,16 +1,19 @@
 package br.com.findyourplace.findyourplaces.controller;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.findyourplace.findyourplaces.controller.dto.CreateUserRequestDTO;
-import br.com.findyourplace.findyourplaces.controller.dto.CreateUserResponseDTO;
-import br.com.findyourplace.findyourplaces.controller.dto.ResponseAPIDefault;
+import br.com.findyourplace.findyourplaces.controller.dto.request.CreateUserRequestDTO;
+import br.com.findyourplace.findyourplaces.controller.dto.response.CreateUserResponseDTO;
+import br.com.findyourplace.findyourplaces.controller.dto.response.ListAllUsersResponseDTO;
+import br.com.findyourplace.findyourplaces.controller.dto.response.ResponseAPIDefault;
 import br.com.findyourplace.findyourplaces.service.UserService;
 import jakarta.validation.Valid;
 
@@ -38,5 +41,16 @@ public class UserController {
 	                    "Usuário cadastrado com sucesso",
 	                    user
 	            ));
+	}
+	
+	@GetMapping(path = "/list")
+	public ResponseEntity<ResponseAPIDefault<List<ListAllUsersResponseDTO>>> listAll() {
+		
+	    return ResponseEntity
+	            .ok()
+	            .body(new ResponseAPIDefault<>(
+	                    "Usuários listados com sucesso",
+	                    this.userService.listAll()
+	             ));
 	}
 }

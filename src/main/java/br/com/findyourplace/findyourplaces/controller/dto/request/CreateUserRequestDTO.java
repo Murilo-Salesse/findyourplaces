@@ -1,4 +1,4 @@
-package br.com.findyourplace.findyourplaces.controller.dto;
+package br.com.findyourplace.findyourplaces.controller.dto.request;
 
 import org.hibernate.validator.constraints.Length;
 

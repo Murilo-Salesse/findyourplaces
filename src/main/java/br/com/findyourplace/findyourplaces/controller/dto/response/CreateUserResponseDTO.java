@@ -1,4 +1,4 @@
-package br.com.findyourplace.findyourplaces.controller.dto;
+package br.com.findyourplace.findyourplaces.controller.dto.response;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
