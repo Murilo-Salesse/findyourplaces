@@ -43,6 +43,7 @@ public class UserController {
 	            ));
 	}
 	
+	// Rota apenas para ADMIN
 	@GetMapping(path = "/list")
 	public ResponseEntity<ResponseAPIDefault<List<ListAllUsersResponseDTO>>> listAll() {
 		
