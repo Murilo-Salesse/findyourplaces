@@ -6,8 +6,8 @@ services:
     container_name: findyourplaces-db
     environment:
       POSTGRES_DB: ${DB}
-      POSTGRES_USER: ${USER_DB}
-      POSTGRES_PASSWORD: ${PASSWORD_DB}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "3355:5432"
     volumes:

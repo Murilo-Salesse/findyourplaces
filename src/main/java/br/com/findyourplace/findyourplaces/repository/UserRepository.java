@@ -12,4 +12,6 @@ import br.com.findyourplace.findyourplaces.entity.UserEntity;
 public interface UserRepository extends JpaRepository<UserEntity, UUID>{
 
 	Optional<UserEntity> findByNameOrEmail(String name, String email);
+    Optional<UserEntity> findByEmail(String email);
+
 }

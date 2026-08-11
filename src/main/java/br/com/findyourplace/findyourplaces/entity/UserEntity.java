@@ -130,5 +130,7 @@ public class UserEntity {
 		this.updatedAt = updatedAt;
 	}
 	
-	
-}
+	public boolean isActive() {
+	    return this.status == UserStatus.ACTIVE;
+	}
+ }
