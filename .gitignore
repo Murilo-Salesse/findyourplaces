@@ -20,6 +20,10 @@ target/
 *.ipr
 .env
 
+# JWT RSA keys
+src/main/resources/publicKey.pem
+src/main/resources/privateKey.pem
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
