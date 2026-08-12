@@ -1,6 +1,8 @@
 package br.com.findyourplace.findyourplaces.entity;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -14,6 +16,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -24,6 +29,13 @@ public class UserEntity {
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
+	
+	@ManyToMany
+	@JoinTable(
+	  name = "tb_users_roles", 
+	  joinColumns = @JoinColumn(name = "user_id"), 
+	  inverseJoinColumns = @JoinColumn(name = "role_id"))
+	 private Set<RoleEntity> roles = new HashSet<RoleEntity>();
 
 	@Column(name = "name", nullable = false)
 	private String name;
@@ -53,10 +65,11 @@ public class UserEntity {
 		super();
 	}
 
-	public UserEntity(UUID id, String name, String email, String passwordHash, String phone, UserStatus status,
-			LocalDateTime createdAt, LocalDateTime updatedAt) {
+	public UserEntity(UUID id, Set<RoleEntity> roles, String name, String email, String passwordHash, String phone,
+			UserStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		super();
 		this.id = id;
+		this.roles = roles;
 		this.name = name;
 		this.email = email;
 		this.passwordHash = passwordHash;
@@ -72,6 +85,14 @@ public class UserEntity {
 
 	public void setId(UUID id) {
 		this.id = id;
+	}
+
+	public Set<RoleEntity> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<RoleEntity> roles) {
+		this.roles = roles;
 	}
 
 	public String getName() {
@@ -129,6 +150,7 @@ public class UserEntity {
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
 	}
+
 	
 	public boolean isActive() {
 	    return this.status == UserStatus.ACTIVE;

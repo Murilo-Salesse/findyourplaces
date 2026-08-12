@@ -21,8 +21,8 @@ target/
 .env
 
 # JWT RSA keys
-src/main/resources/publicKey.pem
 src/main/resources/privateKey.pem
+src/main/resources/publicKey.pem
 
 ### NetBeans ###
 /nbproject/private/

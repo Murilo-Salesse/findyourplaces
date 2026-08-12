@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import br.com.findyourplace.findyourplaces.entity.RoleEntity;
 import br.com.findyourplace.findyourplaces.entity.UserEntity;
 import br.com.findyourplace.findyourplaces.repository.UserRepository;
 
@@ -25,13 +26,19 @@ public class CustomUserDetailsService implements UserDetailsService{
 		
 		 UserEntity user = this.userRepository.findByEmail(username)
 				 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+		 
+		 String[] roles = user.getRoles()
+			        .stream()
+			        .map(RoleEntity::getName)
+			        .toArray(String[]::new);
+	    
 
-	        return User.builder()
-	                .username(user.getEmail())
-	                .password(user.getPasswordHash()) 
-	                .disabled(!user.isActive())
-	                .roles("USER") 
-	                .build();
+		    return User.builder()
+		            .username(user.getEmail())
+		            .password(user.getPasswordHash())
+		            .disabled(!user.isActive())
+		            .roles(roles)
+		            .build();
 	}
 
 }

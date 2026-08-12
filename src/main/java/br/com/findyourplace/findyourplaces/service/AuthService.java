@@ -1,6 +1,7 @@
 package br.com.findyourplace.findyourplaces.service;
 
 import java.time.Instant;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.findyourplace.findyourplaces.configuration.JwtConfig;
 import br.com.findyourplace.findyourplaces.controller.dto.response.LoginResponseDTO;
+import br.com.findyourplace.findyourplaces.entity.RoleEntity;
 import br.com.findyourplace.findyourplaces.repository.UserRepository;
 
 @Service
@@ -33,15 +35,27 @@ public class AuthService {
 	    Instant now = Instant.now();
 	    long expiresIn = jwtConfig.getExpiresIn();
 
-	    var user = userRepository.findByEmail(authentication.getName())
-	            .orElseThrow(() ->
-	                    new UsernameNotFoundException("Usuário não encontrado")
-	            );
+	    var user = this.userRepository.findByEmail(authentication.getName())
+	            .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+	    
+	    var roles = user.getRoles()
+	    			.stream()
+	    			.map(RoleEntity::getName)
+	    			.collect(Collectors.toList());
+	    
+	    var scopes = user.getRoles()
+	            .stream()
+	            .flatMap(role -> role.getScopes().stream())
+	            .map(scope -> scope.getName())
+	            .distinct()
+	            .toList();
 
 	    JwtClaimsSet claims = JwtClaimsSet.builder()
 	            .issuer(jwtConfig.getIssuer())
-	            .subject(user.getId().toString())    
-	            .claim("email", user.getEmail()) 
+	            .subject(user.getId().toString())
+	            .claim("email", user.getEmail())
+	            .claim("roles", roles)
+	            .claim("scope", String.join(" ", scopes))
 	            .issuedAt(now)
 	            .expiresAt(now.plusSeconds(expiresIn))
 	            .build();
