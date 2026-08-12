@@ -40,8 +40,8 @@ public class AuthService {
 
 	    JwtClaimsSet claims = JwtClaimsSet.builder()
 	            .issuer(jwtConfig.getIssuer())
-	            .subject(user.getId().toString())     // UUID no sub
-	            .claim("email", user.getEmail())      // email como claim
+	            .subject(user.getId().toString())    
+	            .claim("email", user.getEmail()) 
 	            .issuedAt(now)
 	            .expiresAt(now.plusSeconds(expiresIn))
 	            .build();
