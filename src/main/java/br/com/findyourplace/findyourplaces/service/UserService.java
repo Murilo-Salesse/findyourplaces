@@ -1,13 +1,16 @@
 package br.com.findyourplace.findyourplaces.service;
 
 import java.util.List;
+import java.util.UUID;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.findyourplace.findyourplaces.controller.dto.request.CreateUserRequestDTO;
 import br.com.findyourplace.findyourplaces.controller.dto.response.CreateUserResponseDTO;
 import br.com.findyourplace.findyourplaces.controller.dto.response.ListAllUsersResponseDTO;
+import br.com.findyourplace.findyourplaces.controller.dto.response.ListInfosUserDTO;
 import br.com.findyourplace.findyourplaces.entity.RoleEntity;
 import br.com.findyourplace.findyourplaces.entity.UserEntity;
 import br.com.findyourplace.findyourplaces.exceptions.CreateEntityException;
@@ -56,6 +59,20 @@ public class UserService {
 										 newUser.getPhone(),
 										 newUser.getStatus(),
 										 newUser.getCreatedAt()); 
+	}
+	
+	public ListInfosUserDTO listInfos(UUID userId) {
+		
+		var user = this.userRepository.findById(userId)
+				.orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+
+		return new ListInfosUserDTO(userId, 
+								    user.getName(), 
+								    user.getEmail(),
+								    user.getPhone(), 
+								    user.getStatus(), 
+								    user.getCreatedAt());
+		
 	}
 	
 	public List<ListAllUsersResponseDTO> listAll() {
