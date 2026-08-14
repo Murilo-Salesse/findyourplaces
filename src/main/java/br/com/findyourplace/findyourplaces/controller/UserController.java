@@ -9,15 +9,18 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.findyourplace.findyourplaces.controller.dto.request.CreateUserRequestDTO;
+import br.com.findyourplace.findyourplaces.controller.dto.request.UpdateUserRequestDTO;
 import br.com.findyourplace.findyourplaces.controller.dto.response.CreateUserResponseDTO;
 import br.com.findyourplace.findyourplaces.controller.dto.response.ListAllUsersResponseDTO;
 import br.com.findyourplace.findyourplaces.controller.dto.response.ListInfosUserDTO;
 import br.com.findyourplace.findyourplaces.controller.dto.response.ResponseAPIDefault;
+import br.com.findyourplace.findyourplaces.controller.dto.response.UpdateProfileInfosResponseDTO;
 import br.com.findyourplace.findyourplaces.service.UserService;
 import jakarta.validation.Valid;
 
@@ -48,11 +51,26 @@ public class UserController {
 	}
 	
 	@PreAuthorize("hasAuthority('SCOPE_users:profile')")
+	@PutMapping(path = "/me")
+	public ResponseEntity<ResponseAPIDefault<UpdateProfileInfosResponseDTO>> updateUser(JwtAuthenticationToken token, 
+																						@Valid @RequestBody UpdateUserRequestDTO dto) {
+
+		UUID userId = UUID.fromString(token.getToken().getSubject());
+	    var user = this.userService.update(userId, dto);
+
+	    return ResponseEntity
+	            .ok()
+	            .body(new ResponseAPIDefault<>(
+	                    "Usuário atualizado com sucesso",
+	                    user
+	            ));
+	}
+	
+	@PreAuthorize("hasAuthority('SCOPE_users:profile')")
 	@GetMapping(path = "/me")
 	public ResponseEntity<ResponseAPIDefault<ListInfosUserDTO>> listInfos(JwtAuthenticationToken token) {
 
 	    UUID userId = UUID.fromString(token.getToken().getSubject());
-
 	    var user = this.userService.listInfos(userId);
 
 	    return ResponseEntity

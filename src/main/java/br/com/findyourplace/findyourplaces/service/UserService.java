@@ -8,9 +8,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.findyourplace.findyourplaces.controller.dto.request.CreateUserRequestDTO;
+import br.com.findyourplace.findyourplaces.controller.dto.request.UpdateUserRequestDTO;
 import br.com.findyourplace.findyourplaces.controller.dto.response.CreateUserResponseDTO;
 import br.com.findyourplace.findyourplaces.controller.dto.response.ListAllUsersResponseDTO;
 import br.com.findyourplace.findyourplaces.controller.dto.response.ListInfosUserDTO;
+import br.com.findyourplace.findyourplaces.controller.dto.response.UpdateProfileInfosResponseDTO;
 import br.com.findyourplace.findyourplaces.entity.RoleEntity;
 import br.com.findyourplace.findyourplaces.entity.UserEntity;
 import br.com.findyourplace.findyourplaces.exceptions.CreateEntityException;
@@ -59,6 +61,26 @@ public class UserService {
 										 newUser.getPhone(),
 										 newUser.getStatus(),
 										 newUser.getCreatedAt()); 
+	}
+	
+	public UpdateProfileInfosResponseDTO update(UUID userId, UpdateUserRequestDTO req) {
+		
+		var user = this.userRepository.findById(userId)
+				.orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+		
+		
+		if (req.name() != null && !req.name().isBlank()) {
+		    user.setName(req.name());
+		}
+
+		if (req.phone() != null && !req.phone().isBlank()) {
+		    user.setPhone(req.phone());
+		}	
+
+		this.userRepository.save(user);
+		
+		return new UpdateProfileInfosResponseDTO(user.getName(), user.getPhone());
+		
 	}
 	
 	public ListInfosUserDTO listInfos(UUID userId) {
