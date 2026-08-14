@@ -64,6 +64,10 @@ public class VehicleEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+	public VehicleEntity() {
+		super();
+	}
+    
 	public VehicleEntity(UUID id, UserEntity user, String nickname, String brand, String model, Integer year,
 			String fuelType, BigDecimal cityConsumptionKmL, BigDecimal highwayConsumptionKmL,
 			BigDecimal tankCapacityLiters, Boolean active, LocalDateTime createdAt, LocalDateTime updatedAt) {
