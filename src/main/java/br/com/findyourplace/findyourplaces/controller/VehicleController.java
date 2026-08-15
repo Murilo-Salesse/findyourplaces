@@ -19,51 +19,41 @@ import br.com.findyourplace.findyourplaces.service.VehicleService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/vehicles")
 public class VehicleController {
-	
+
 	private final VehicleService vehicleService;
 
 	public VehicleController(VehicleService vehicleService) {
 		super();
 		this.vehicleService = vehicleService;
 	}
-	
-	
+
 	@PreAuthorize("hasAuthority('SCOPE_vehicles:write')")
-	@PostMapping(path = "/vehicles")
-	public ResponseEntity<ResponseAPIDefault<CreateVehiclesResponseDTO>> createUser(@Valid @RequestBody CreateVehicleRequestDTO dto,
-																					JwtAuthenticationToken token) {
+	@PostMapping()
+	public ResponseEntity<ResponseAPIDefault<CreateVehiclesResponseDTO>> createUser(
+			@Valid @RequestBody CreateVehicleRequestDTO dto, JwtAuthenticationToken token) {
 
 		var userID = UUID.fromString(token.getToken().getSubject());
-		
-	    var vehicle = this.vehicleService.createVehicle(dto, userID);
-	    var location = URI.create("/vehicles/" + vehicle.id());
 
-	    return ResponseEntity
-	            .created(location)
-	            .body(new ResponseAPIDefault<>(
-	                    "Veículo cadastrado com sucesso",
-	                    vehicle
-	            ));
+		var vehicle = this.vehicleService.createVehicle(dto, userID);
+		var location = URI.create("/vehicles/" + vehicle.id());
+
+		return ResponseEntity.created(location)
+				.body(new ResponseAPIDefault<>("Veículo cadastrado com sucesso", vehicle));
 	}
 
-	
 	@PreAuthorize("hasAuthority('SCOPE_vehicles:write')")
-	@GetMapping(path = "/me/vehicles")
-	public ResponseEntity<ResponseAPIDefault<CreateVehiclesResponseDTO>> list(@Valid @RequestBody CreateVehicleRequestDTO dto,
-																			  JwtAuthenticationToken token) {
+	@GetMapping(path = "/me")
+	public ResponseEntity<ResponseAPIDefault<CreateVehiclesResponseDTO>> list(
+			@Valid @RequestBody CreateVehicleRequestDTO dto, JwtAuthenticationToken token) {
 
-			var userID = UUID.fromString(token.getToken().getSubject());
-			
-			var vehicle = this.vehicleService.createVehicle(dto, userID);
-			var location = URI.create("/vehicles/" + vehicle.id());
-			
-			return ResponseEntity
-			.created(location)
-			.body(new ResponseAPIDefault<>(
-			"Veículo cadastrado com sucesso",
-			vehicle
-			));
+		var userID = UUID.fromString(token.getToken().getSubject());
+
+		var vehicle = this.vehicleService.createVehicle(dto, userID);
+		var location = URI.create("/vehicles/" + vehicle.id());
+
+		return ResponseEntity.created(location)
+				.body(new ResponseAPIDefault<>("Veículo cadastrado com sucesso", vehicle));
 	}
 }

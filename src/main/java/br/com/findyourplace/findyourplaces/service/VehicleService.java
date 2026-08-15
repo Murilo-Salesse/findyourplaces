@@ -21,29 +21,30 @@ public class VehicleService {
 	private final UserRepository userRepository;
 	private final VehicleMapper vehicleMapper;
 
-	public VehicleService(VehicleRepository vehicleRepository, UserRepository userRepository, VehicleMapper vehicleMapper) {
+	public VehicleService(VehicleRepository vehicleRepository, UserRepository userRepository,
+			VehicleMapper vehicleMapper) {
 		super();
 		this.vehicleRepository = vehicleRepository;
 		this.userRepository = userRepository;
 		this.vehicleMapper = vehicleMapper;
 	}
-	
+
 	@Transactional
 	public CreateVehiclesResponseDTO createVehicle(CreateVehicleRequestDTO req, UUID userId) {
 
-	    var user = userRepository.findById(userId)
-	            .orElseThrow(() -> new UserNotFoundException("Problema ao encontrar usuário.", "Usuário não encontrado."));
+		var user = userRepository.findById(userId).orElseThrow(
+				() -> new UserNotFoundException("Problema ao encontrar usuário.", "Usuário não encontrado."));
 
-	    var userActive = userRepository.existsByIdAndStatus(userId, UserStatus.ACTIVE);
+		var userActive = userRepository.existsByIdAndStatus(userId, UserStatus.ACTIVE);
 
-	    if (!userActive) {
-	        throw new EntityNotFoundException("Usuário não encontrado.", "Usuário não está ativo.");
-	    }
+		if (!userActive) {
+			throw new EntityNotFoundException("Usuário não encontrado.", "Usuário não está ativo.");
+		}
 
-	    var vehicle = vehicleMapper.toEntity(req, user);
+		var vehicle = vehicleMapper.toEntity(req, user);
 
-	    vehicleRepository.save(vehicle);
+		vehicleRepository.save(vehicle);
 
-	    return vehicleMapper.toResponse(vehicle);
+		return vehicleMapper.toResponse(vehicle);
 	}
 }

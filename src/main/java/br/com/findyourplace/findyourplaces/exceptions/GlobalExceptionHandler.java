@@ -12,60 +12,34 @@ import br.com.findyourplace.findyourplaces.controller.dto.response.InvalidParams
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(FindYourPlaceException.class)
-    public ResponseEntity<ExceptionResponse> handleFindYourPlaceException(
-            FindYourPlaceException exception
-    ) {
+	@ExceptionHandler(FindYourPlaceException.class)
+	public ResponseEntity<ExceptionResponse> handleFindYourPlaceException(FindYourPlaceException exception) {
 
-        var problemDetails = exception.toExceptionResponse();
+		var problemDetails = exception.toExceptionResponse();
 
-        return ResponseEntity
-                .status(problemDetails.status())
-                .body(problemDetails.response());
-    }
+		return ResponseEntity.status(problemDetails.status()).body(problemDetails.response());
+	}
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ExceptionResponse> handleValidationException(MethodArgumentNotValidException exception) {
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<ExceptionResponse> handleValidationException(MethodArgumentNotValidException exception) {
 
-        var invalidParams = exception
-                .getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(error -> new InvalidParamsResponseDTO(
-                        error.getField(),
-                        error.getDefaultMessage()
-                ))
-                .toList();
+		var invalidParams = exception.getBindingResult().getFieldErrors().stream()
+				.map(error -> new InvalidParamsResponseDTO(error.getField(), error.getDefaultMessage())).toList();
 
-        var response = new ExceptionResponse(
-                "about:blank",
-                "Invalid parameters",
-                "One or more fields are invalid",
-                HttpStatus.BAD_REQUEST.value(),
-                invalidParams
-        );
+		var response = new ExceptionResponse("about:blank", "Invalid parameters", "One or more fields are invalid",
+				HttpStatus.BAD_REQUEST.value(), invalidParams);
 
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(response);
-    }
-    
-    
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ExceptionResponse> handleBadCredentialsException(BadCredentialsException exception) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	}
 
-        var status = HttpStatus.UNAUTHORIZED;
+	@ExceptionHandler(BadCredentialsException.class)
+	public ResponseEntity<ExceptionResponse> handleBadCredentialsException(BadCredentialsException exception) {
 
-        var response = new ExceptionResponse(
-                "about:blank",
-                "Falha na autenticação",
-                "E-mail ou senha inválidos.",
-                status.value(),
-                null
-        );
+		var status = HttpStatus.UNAUTHORIZED;
 
-        return ResponseEntity
-                .status(status)
-                .body(response);
-    }
+		var response = new ExceptionResponse("about:blank", "Falha na autenticação", "E-mail ou senha inválidos.",
+				status.value(), null);
+
+		return ResponseEntity.status(status).body(response);
+	}
 }

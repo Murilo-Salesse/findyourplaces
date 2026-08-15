@@ -1,6 +1,5 @@
 package br.com.findyourplace.findyourplaces.controller;
 
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,36 +16,27 @@ import br.com.findyourplace.findyourplaces.service.AuthService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping(path = "/api/v1")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
-	
-	private final AuthService authService;	
+
+	private final AuthService authService;
 	private final AuthenticationManager authenticationManager;
-	
+
 	public AuthController(AuthService authService, AuthenticationManager authenticationManager) {
-		super();
 		this.authService = authService;
 		this.authenticationManager = authenticationManager;
 	}
 
-	@PostMapping(path = "/auth/token")
+	@PostMapping("/token")
 	public ResponseEntity<ResponseAPIDefault<LoginResponseDTO>> getToken(@Valid @RequestBody LoginRequestDTO dto) {
 
-	    Authentication authenticationRequest =
-	            UsernamePasswordAuthenticationToken.unauthenticated(dto.email(), dto.password());
+		Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(dto.email(),
+				dto.password());
 
-	    Authentication authenticationResponse =
-	            authenticationManager.authenticate(authenticationRequest);
+		Authentication authenticationResponse = authenticationManager.authenticate(authenticationRequest);
 
-	    LoginResponseDTO token =
-	            authService.generateToken(authenticationResponse);
+		var token = authService.generateToken(authenticationResponse);
 
-	    return ResponseEntity.ok(
-	            new ResponseAPIDefault<>(
-	                    "Login realizado com sucesso",
-	                    token
-	            )
-	    );
+		return ResponseEntity.ok(new ResponseAPIDefault<>("Login realizado com sucesso", token));
 	}
-
 }

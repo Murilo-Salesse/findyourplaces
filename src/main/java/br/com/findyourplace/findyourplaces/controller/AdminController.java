@@ -15,25 +15,20 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/v1")
 public class AdminController {
-	
-	private final AdminService adminService;	
+
+	private final AdminService adminService;
 
 	public AdminController(AdminService adminService) {
 		super();
 		this.adminService = adminService;
 	}
 
-
 	@PostMapping(path = "/setup-admin")
-	public ResponseEntity<ResponseAPIDefault<CreateAdminResponseDTO>> createAdmin(@Valid @RequestBody CreateAdminRequestDTO dto) {
+	public ResponseEntity<ResponseAPIDefault<CreateAdminResponseDTO>> createAdmin(
+			@Valid @RequestBody CreateAdminRequestDTO dto) {
 
-	    var admin = this.adminService.setupAdmin(dto);
+		var admin = this.adminService.setupAdmin(dto);
 
-	    return ResponseEntity
-	            .ok()
-	            .body(new ResponseAPIDefault<>(
-	                    "Admin cadastrado com sucesso",
-	                    admin
-	            ));
+		return ResponseEntity.ok().body(new ResponseAPIDefault<>("Admin cadastrado com sucesso", admin));
 	}
 }
