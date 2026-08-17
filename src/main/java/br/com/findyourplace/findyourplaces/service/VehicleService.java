@@ -3,6 +3,9 @@ package br.com.findyourplace.findyourplaces.service;
 import java.util.List;
 import java.util.UUID;
 
+import br.com.findyourplace.findyourplaces.controller.dto.request.UpdatedVehicleRequestDTO;
+import br.com.findyourplace.findyourplaces.controller.dto.response.UpdatedVehicleResponseDTO;
+import br.com.findyourplace.findyourplaces.entity.VehicleEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -74,5 +77,48 @@ public class VehicleService {
 		return this.vehicleMapper.toListById(vehicleFounded);
 
 
+	}
+
+	@Transactional
+	public UpdatedVehicleResponseDTO update(UpdatedVehicleRequestDTO req,
+											UUID vehicleId,
+											UUID userId) {
+
+		var vehicle = vehicleRepository.findByIdAndUserId(vehicleId, userId)
+				.orElseThrow(() -> new EntityNotFoundException("Entidade não encontrada", "Veículo não encontrado."));
+
+		if (req.nickname() != null) {
+			vehicle.setNickname(req.nickname());
+		}
+
+		if (req.brand() != null) {
+			vehicle.setBrand(req.brand());
+		}
+
+		if (req.model() != null) {
+			vehicle.setModel(req.model());
+		}
+
+		if (req.year() != null) {
+			vehicle.setYear(req.year());
+		}
+
+		if (req.fuelType() != null) {
+			vehicle.setFuelType(req.fuelType());
+		}
+
+		if (req.cityConsumptionKmL() != null) {
+			vehicle.setCityConsumptionKmL(req.cityConsumptionKmL());
+		}
+
+		if (req.highwayConsumptionKmL() != null) {
+			vehicle.setHighwayConsumptionKmL(req.highwayConsumptionKmL());
+		}
+
+		if (req.tankCapacityLiters() != null) {
+			vehicle.setTankCapacityLiters(req.tankCapacityLiters());
+		}
+
+		return vehicleMapper.toUpdatedResponse(vehicle);
 	}
 }

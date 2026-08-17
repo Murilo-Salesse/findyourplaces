@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
+import br.com.findyourplace.findyourplaces.controller.dto.request.UpdatedVehicleRequestDTO;
+import br.com.findyourplace.findyourplaces.controller.dto.response.UpdatedVehicleResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -25,51 +27,68 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/v1/vehicles")
 public class VehicleController {
 
-	private final VehicleService vehicleService;
+    private final VehicleService vehicleService;
 
-	public VehicleController(VehicleService vehicleService) {
-		super();
-		this.vehicleService = vehicleService;
-	}
+    public VehicleController(VehicleService vehicleService) {
+        super();
+        this.vehicleService = vehicleService;
+    }
 
-	@PreAuthorize("hasAuthority('SCOPE_vehicles:write')")
-	@PostMapping()
-	public ResponseEntity<ResponseAPIDefault<CreateVehiclesResponseDTO>> createUser(
-			@Valid @RequestBody CreateVehicleRequestDTO dto, JwtAuthenticationToken token) {
+    @PreAuthorize("hasAuthority('SCOPE_vehicles:write')")
+    @PostMapping()
+    public ResponseEntity<ResponseAPIDefault<CreateVehiclesResponseDTO>> createUser(
+            @Valid @RequestBody CreateVehicleRequestDTO dto, JwtAuthenticationToken token) {
 
-		var userID = UUID.fromString(token.getToken().getSubject());
+        var userID = UUID.fromString(token.getToken().getSubject());
 
-		var vehicle = this.vehicleService.createVehicle(dto, userID);
-		var location = URI.create("/vehicles/" + vehicle.id());
+        var vehicle = this.vehicleService.createVehicle(dto, userID);
+        var location = URI.create("/vehicles/" + vehicle.id());
 
-		return ResponseEntity.created(location)
-				.body(new ResponseAPIDefault<>("Veículo cadastrado com sucesso", vehicle));
-	}
+        return ResponseEntity.created(location)
+                .body(new ResponseAPIDefault<>("Veículo cadastrado com sucesso", vehicle));
+    }
 
-	@PreAuthorize("hasAuthority('SCOPE_vehicles:read')")
-	@GetMapping(path = "/me")
-	public ResponseEntity<ResponseAPIDefault<List<ListVehiclesResponseDTO>>> list(JwtAuthenticationToken token) {
+    @PreAuthorize("hasAuthority('SCOPE_vehicles:read')")
+    @GetMapping(path = "/me")
+    public ResponseEntity<ResponseAPIDefault<List<ListVehiclesResponseDTO>>> list(JwtAuthenticationToken token) {
 
-		var userID = UUID.fromString(token.getToken().getSubject());
-		var vehicles = this.vehicleService.listInfos(userID);
+        var userID = UUID.fromString(token.getToken().getSubject());
+        var vehicles = this.vehicleService.listInfos(userID);
 
-		return ResponseEntity.ok()
-							.body(new ResponseAPIDefault<>(
-									"Veículos encontrados", 
-									vehicles));
-	}
-	
-	@PreAuthorize("hasAuthority('SCOPE_vehicles:read')")
-	@GetMapping(path = "/{vehicleId}")
-	public ResponseEntity<ResponseAPIDefault<ListVehiclesResponseDTO>> listById(@PathVariable("vehicleId") UUID vehicleId, 
-																				  JwtAuthenticationToken token) {
+        return ResponseEntity.ok()
+                .body(new ResponseAPIDefault<>(
+                        "Veículos encontrados",
+                        vehicles));
+    }
 
-		var userID = UUID.fromString(token.getToken().getSubject());
-		var vehicle = this.vehicleService.listInfosById(vehicleId, userID);
+    @PreAuthorize("hasAuthority('SCOPE_vehicles:read')")
+    @GetMapping(path = "/{vehicleId}")
+    public ResponseEntity<ResponseAPIDefault<ListVehiclesResponseDTO>> listById(@PathVariable("vehicleId") UUID vehicleId,
+                                                                                JwtAuthenticationToken token) {
 
-		return ResponseEntity.ok()
-							.body(new ResponseAPIDefault<>(
-									"Veículo encontrado", 
-									vehicle));
-	}
+        var userID = UUID.fromString(token.getToken().getSubject());
+        var vehicle = this.vehicleService.listInfosById(vehicleId, userID);
+
+        return ResponseEntity.ok()
+                .body(new ResponseAPIDefault<>(
+                        "Veículo encontrado",
+                        vehicle));
+    }
+
+    @PreAuthorize("hasAuthority('SCOPE_vehicles:read')")
+    @GetMapping(path = "/{vehicleId}")
+    public ResponseEntity<ResponseAPIDefault<UpdatedVehicleResponseDTO>> update(@Valid @RequestBody UpdatedVehicleRequestDTO dto,
+																				@PathVariable("vehicleId") UUID vehicleId,
+																				JwtAuthenticationToken token) {
+
+
+        var userID = UUID.fromString(token.getToken().getSubject());
+        var vehicle = this.vehicleService.update(dto, vehicleId, userID);
+
+        return ResponseEntity.ok()
+                .body(new ResponseAPIDefault<>(
+                        "Veículo atualizado com sucesso",
+                        vehicle));
+    }
 }
+

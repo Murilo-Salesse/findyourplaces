@@ -190,6 +190,4 @@ public class VehicleEntity {
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
 	}
-    
-    
 }

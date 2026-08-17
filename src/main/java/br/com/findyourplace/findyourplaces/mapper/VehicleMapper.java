@@ -1,5 +1,6 @@
 package br.com.findyourplace.findyourplaces.mapper;
 
+import br.com.findyourplace.findyourplaces.controller.dto.response.UpdatedVehicleResponseDTO;
 import org.springframework.stereotype.Component;
 
 import br.com.findyourplace.findyourplaces.controller.dto.request.CreateVehicleRequestDTO;
@@ -70,5 +71,22 @@ public class VehicleMapper {
 										   vehicle.getHighwayConsumptionKmL(),
 										   vehicle.getTankCapacityLiters(),
 										   vehicle.getActive());
+	}
+
+	public UpdatedVehicleResponseDTO toUpdatedResponse(VehicleEntity vehicle) {
+
+		return new UpdatedVehicleResponseDTO(
+				vehicle.getId(),
+				vehicle.getNickname(),
+				vehicle.getBrand(),
+				vehicle.getModel(),
+				vehicle.getYear(),
+				vehicle.getFuelType(),
+				vehicle.getCityConsumptionKmL(),
+				vehicle.getHighwayConsumptionKmL(),
+				vehicle.getTankCapacityLiters(),
+				vehicle.getActive(),
+				vehicle.getUpdatedAt()
+		);
 	}
 }

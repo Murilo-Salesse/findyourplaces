@@ -14,5 +14,4 @@ public record UpdatedVehicleResponseDTO(UUID id,
                                         BigDecimal highwayConsumptionKmL,
                                         BigDecimal tankCapacityLiters,
                                         Boolean    active,
-                                        LocalDateTime createdAt,
                                         LocalDateTime updatedAt) {}

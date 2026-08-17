@@ -3,6 +3,7 @@ package br.com.findyourplace.findyourplaces.service;
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.transaction.Transactional;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -57,10 +58,13 @@ public class UserService {
 	}
 
 
+	@Transactional
 	public UpdateProfileInfosResponseDTO update(UUID userId, UpdateUserRequestDTO req) {
 
-		var user = this.userRepository.findById(userId)
-				.orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+		var user = userRepository.findById(userId)
+				.orElseThrow(() ->
+						new UsernameNotFoundException("Usuário não encontrado")
+				);
 
 		if (req.name() != null && !req.name().isBlank()) {
 			user.setName(req.name());
@@ -69,8 +73,6 @@ public class UserService {
 		if (req.phone() != null && !req.phone().isBlank()) {
 			user.setPhone(req.phone());
 		}
-
-		this.userRepository.save(user);
 
 		return userMapper.toUpdateResponse(user);
 	}
