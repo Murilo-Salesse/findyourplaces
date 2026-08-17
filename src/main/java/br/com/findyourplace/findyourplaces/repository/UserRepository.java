@@ -7,11 +7,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import br.com.findyourplace.findyourplaces.entity.UserEntity;
+import br.com.findyourplace.findyourplaces.enums.UserStatus;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserEntity, UUID>{
+public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 
 	Optional<UserEntity> findByNameOrEmail(String name, String email);
-    Optional<UserEntity> findByEmail(String email);
+
+	Optional<UserEntity> findByEmail(String email);
+
+	boolean existsByIdAndStatus(UUID id, UserStatus status);
 
 }
