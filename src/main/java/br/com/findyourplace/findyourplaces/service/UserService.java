@@ -86,6 +86,9 @@ public class UserService {
 
 	public List<ListAllUsersResponseDTO> listAll() {
 
-		return this.userRepository.findAll().stream().map(ListAllUsersResponseDTO::fromEntity).toList();
+		return this.userRepository
+				.findAll()
+				.stream()
+				.map(ListAllUsersResponseDTO::fromEntity).toList();
 	}
 }

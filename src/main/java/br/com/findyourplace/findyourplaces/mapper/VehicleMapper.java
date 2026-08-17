@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import br.com.findyourplace.findyourplaces.controller.dto.request.CreateVehicleRequestDTO;
 import br.com.findyourplace.findyourplaces.controller.dto.response.CreateVehiclesResponseDTO;
+import br.com.findyourplace.findyourplaces.controller.dto.response.ListVehiclesResponseDTO;
 import br.com.findyourplace.findyourplaces.entity.UserEntity;
 import br.com.findyourplace.findyourplaces.entity.VehicleEntity;
 
@@ -41,4 +42,33 @@ public class VehicleMapper {
                 vehicle.getCreatedAt()
         );
     }
+    
+    
+	public ListVehiclesResponseDTO toListInfosVehiclesReponse(VehicleEntity vehicle) {
+		
+		return new ListVehiclesResponseDTO(vehicle.getId(),
+										   vehicle.getNickname(),
+										   vehicle.getBrand(),
+										   vehicle.getModel(),
+										   vehicle.getYear(),
+										   vehicle.getFuelType(),
+										   vehicle.getCityConsumptionKmL(),
+										   vehicle.getHighwayConsumptionKmL(),
+										   vehicle.getTankCapacityLiters(),
+										   vehicle.getActive());
+	}
+	
+	public ListVehiclesResponseDTO toListById(VehicleEntity vehicle) {
+		
+		return new ListVehiclesResponseDTO(vehicle.getId(),
+										   vehicle.getNickname(),
+										   vehicle.getBrand(),
+										   vehicle.getModel(),
+										   vehicle.getYear(),
+										   vehicle.getFuelType(),
+										   vehicle.getCityConsumptionKmL(),
+										   vehicle.getHighwayConsumptionKmL(),
+										   vehicle.getTankCapacityLiters(),
+										   vehicle.getActive());
+	}
 }
