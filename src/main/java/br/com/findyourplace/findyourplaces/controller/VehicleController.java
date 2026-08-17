@@ -53,23 +53,17 @@ public class VehicleController {
 		var userID = UUID.fromString(token.getToken().getSubject());
 		var vehicles = this.vehicleService.listInfos(userID);
 
-		return ResponseEntity.ok()
-							.body(new ResponseAPIDefault<>(
-									"Veículos encontrados", 
-									vehicles));
+		return ResponseEntity.ok().body(new ResponseAPIDefault<>("Veículos encontrados", vehicles));
 	}
-	
+
 	@PreAuthorize("hasAuthority('SCOPE_vehicles:read')")
 	@GetMapping(path = "/{vehicleId}")
-	public ResponseEntity<ResponseAPIDefault<ListVehiclesResponseDTO>> listById(@PathVariable("vehicleId") UUID vehicleId, 
-																				  JwtAuthenticationToken token) {
+	public ResponseEntity<ResponseAPIDefault<ListVehiclesResponseDTO>> listById(
+			@PathVariable("vehicleId") UUID vehicleId, JwtAuthenticationToken token) {
 
 		var userID = UUID.fromString(token.getToken().getSubject());
 		var vehicle = this.vehicleService.listInfosById(vehicleId, userID);
 
-		return ResponseEntity.ok()
-							.body(new ResponseAPIDefault<>(
-									"Veículo encontrado", 
-									vehicle));
+		return ResponseEntity.ok().body(new ResponseAPIDefault<>("Veículo encontrado", vehicle));
 	}
 }
