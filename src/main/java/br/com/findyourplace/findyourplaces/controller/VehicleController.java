@@ -4,15 +4,12 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
+import br.com.findyourplace.findyourplaces.controller.dto.request.UpdatedVehicleRequestDTO;
+import br.com.findyourplace.findyourplaces.controller.dto.response.UpdatedVehicleResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import br.com.findyourplace.findyourplaces.controller.dto.request.CreateVehicleRequestDTO;
 import br.com.findyourplace.findyourplaces.controller.dto.response.CreateVehiclesResponseDTO;
@@ -55,21 +52,36 @@ public class VehicleController {
 
 		return ResponseEntity.ok()
 							.body(new ResponseAPIDefault<>(
-									"Veículos encontrados", 
+									"Veículos encontrados",
 									vehicles));
 	}
-	
-	@PreAuthorize("hasAuthority('SCOPE_vehicles:read')")
+
+	@PreAuthorize("hasAuthority('SCOPE_vehicles:write')")
 	@GetMapping(path = "/{vehicleId}")
-	public ResponseEntity<ResponseAPIDefault<ListVehiclesResponseDTO>> listById(@PathVariable("vehicleId") UUID vehicleId, 
-																				  JwtAuthenticationToken token) {
+	public ResponseEntity<ResponseAPIDefault<ListVehiclesResponseDTO>> listById(@PathVariable("vehicleId") UUID vehicleId,
+																				JwtAuthenticationToken token) {
 
 		var userID = UUID.fromString(token.getToken().getSubject());
 		var vehicle = this.vehicleService.listInfosById(vehicleId, userID);
 
 		return ResponseEntity.ok()
-							.body(new ResponseAPIDefault<>(
-									"Veículo encontrado", 
-									vehicle));
+				.body(new ResponseAPIDefault<>(
+						"Veículo encontrado",
+						vehicle));
+	}
+
+	@PreAuthorize("hasAuthority('SCOPE_vehicles:read')")
+	@PatchMapping(path = "/{vehicleId}")
+	public ResponseEntity<ResponseAPIDefault<UpdatedVehicleResponseDTO>> update(@Valid @RequestBody UpdatedVehicleRequestDTO dto,
+                                                                                @PathVariable("vehicleId") UUID vehicleId,
+                                                                                JwtAuthenticationToken token) {
+
+		var userID = UUID.fromString(token.getToken().getSubject());
+		var vehicle = this.vehicleService.update(dto, vehicleId, userID);
+
+		return ResponseEntity.ok()
+				.body(new ResponseAPIDefault<>(
+						"Veículo encontrado",
+						vehicle));
 	}
 }

@@ -71,8 +71,6 @@ public class UserController {
 	                    user
 	            ));
 	}
-	
-
 	@PreAuthorize("hasAuthority('SCOPE_users:read')")
 	@GetMapping
 	public ResponseEntity<ResponseAPIDefault<List<ListAllUsersResponseDTO>>> listAll() {
