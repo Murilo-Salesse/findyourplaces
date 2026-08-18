@@ -1,29 +1,25 @@
 package br.com.findyourplace.findyourplaces.service;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.findyourplace.findyourplaces.controller.dto.request.CreateAdminRequestDTO;
 import br.com.findyourplace.findyourplaces.controller.dto.response.CreateAdminResponseDTO;
-import br.com.findyourplace.findyourplaces.entity.RoleEntity;
-import br.com.findyourplace.findyourplaces.entity.UserEntity;
 import br.com.findyourplace.findyourplaces.exceptions.AdminException;
-import br.com.findyourplace.findyourplaces.repository.RoleRepository;
+import br.com.findyourplace.findyourplaces.factory.UserFactory;
+import br.com.findyourplace.findyourplaces.mapper.UserMapper;
 import br.com.findyourplace.findyourplaces.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class AdminService {
 
 	private final UserRepository userRepository;
-	private final PasswordEncoder passwordEncoder;
-	private final RoleRepository roleRepository;
+	private final UserFactory userFactory;
+	private final UserMapper userMapper;
 
-	public AdminService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
-		super();
+	public AdminService(UserRepository userRepository, UserFactory userFactory, UserMapper userMapper) {
 		this.userRepository = userRepository;
-		this.passwordEncoder = passwordEncoder;
-		this.roleRepository = roleRepository;
+		this.userFactory = userFactory;
+		this.userMapper = userMapper;
 	}
 
 	public CreateAdminResponseDTO setupAdmin(CreateAdminRequestDTO req) {
@@ -34,24 +30,10 @@ public class AdminService {
 					"ADMIN só pode ser criado quando não há usuários no sistema.");
 		}
 
-		RoleEntity roles = this.roleRepository.findByName("ADMIN")
-				.orElseThrow(() -> new EntityNotFoundException("Role com esse nome não encontrado"));
-
-		String hashedPassword = this.passwordEncoder.encode(req.password());
-
-		var newUser = new UserEntity();
-
-		newUser.setName(req.name());
-		newUser.setEmail(req.email());
-		newUser.setPasswordHash(hashedPassword);
-		newUser.setPhone(req.phone());
-		newUser.getRoles().add(roles);
-
-
+		var newUser = userFactory.create(req.name(), req.email(), req.password(), req.phone(), "ADMIN");
 		this.userRepository.save(newUser);
 
-		return new CreateAdminResponseDTO(newUser.getId(), newUser.getName(), newUser.getEmail(), newUser.getPhone(),
-				newUser.getStatus(), newUser.getCreatedAt());
+		return userMapper.toAdminResponse(newUser);
 	}
 
 }

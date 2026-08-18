@@ -92,6 +92,10 @@ public class TripEntity {
 	@UpdateTimestamp
 	private LocalDateTime updatedAt;
 
+	public TripEntity() {
+		super();
+	}
+
 	public TripEntity(UUID id, UserEntity user, VehicleEntity vehicle, String title, String originCity,
 			String originState, BigDecimal originLatitude, BigDecimal originLongitude, String destinationCity,
 			String destinationState, BigDecimal destinationLatitude, BigDecimal destinationLongitude, BigDecimal budget,

@@ -46,7 +46,8 @@ public class SecurityConfig {
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
 				.authorizeHttpRequests(
-						auth -> auth.requestMatchers("/api/v1/users", "/api/v1/auth/token", "/api/v1/setup-admin")
+                        auth -> auth.requestMatchers("/api/v1/users", "/api/v1/auth/token", "/api/v1/setup-admin",
+                                        "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
 								.permitAll().anyRequest().authenticated())
 
 				.oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()));

@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.UUID;
 
 import jakarta.transaction.Transactional;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.findyourplace.findyourplaces.controller.dto.request.CreateUserRequestDTO;
@@ -14,43 +12,33 @@ import br.com.findyourplace.findyourplaces.controller.dto.response.CreateUserRes
 import br.com.findyourplace.findyourplaces.controller.dto.response.ListAllUsersResponseDTO;
 import br.com.findyourplace.findyourplaces.controller.dto.response.ListInfosUserDTO;
 import br.com.findyourplace.findyourplaces.controller.dto.response.UpdateProfileInfosResponseDTO;
-import br.com.findyourplace.findyourplaces.entity.RoleEntity;
-import br.com.findyourplace.findyourplaces.exceptions.CreateEntityException;
+import br.com.findyourplace.findyourplaces.exceptions.DuplicateUserException;
+import br.com.findyourplace.findyourplaces.exceptions.UserNotFoundException;
+import br.com.findyourplace.findyourplaces.factory.UserFactory;
 import br.com.findyourplace.findyourplaces.mapper.UserMapper;
-import br.com.findyourplace.findyourplaces.repository.RoleRepository;
 import br.com.findyourplace.findyourplaces.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class UserService {
 
 	private final UserRepository userRepository;
 	private final UserMapper userMapper;
-	private final PasswordEncoder passwordEncoder;
-	private final RoleRepository roleRepository;
+	private final UserFactory userFactory;
 
-	public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository,
-			UserMapper userMapper) {
-		super();
+	public UserService(UserRepository userRepository, UserMapper userMapper, UserFactory userFactory) {
 		this.userRepository = userRepository;
 		this.userMapper = userMapper;
-		this.passwordEncoder = passwordEncoder;
-		this.roleRepository = roleRepository;
+		this.userFactory = userFactory;
 	}
 
 	public CreateUserResponseDTO createUser(CreateUserRequestDTO req) {
 
 		var existsUser = this.userRepository.findByNameOrEmail(req.name(), req.email());
 		if (!existsUser.isEmpty()) {
-			throw new CreateEntityException("Problema ao registrar usuário.", "Usuário já existe na base.");
+			throw new DuplicateUserException("Usuário já cadastrado", "Nome ou e-mail já cadastrado.");
 		}
 
-		RoleEntity roles = this.roleRepository.findByName("USER")
-				.orElseThrow(() -> new EntityNotFoundException("Role com esse nome não encontrado"));
-
-		String hashedPassword = passwordEncoder.encode(req.password());
-
-		var user = userMapper.toEntity(req, roles, hashedPassword);
+		var user = userFactory.create(req.name(), req.email(), req.password(), req.phone(), "USER");
 
 		userRepository.save(user);
 
@@ -63,7 +51,7 @@ public class UserService {
 
 		var user = userRepository.findById(userId)
 				.orElseThrow(() ->
-						new UsernameNotFoundException("Usuário não encontrado")
+						new UserNotFoundException("Usuário não encontrado", "O usuário informado não existe.")
 				);
 
 		if (req.name() != null && !req.name().isBlank()) {
@@ -77,12 +65,13 @@ public class UserService {
 		return userMapper.toUpdateResponse(user);
 	}
 
-	public ListInfosUserDTO listInfos(UUID userId) {
+	public ListInfosUserDTO findProfile(UUID userId) {
 
 		var user = this.userRepository.findById(userId)
-				.orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+				.orElseThrow(() -> new UserNotFoundException(
+						"Usuário não encontrado", "O usuário informado não existe."));
 
-		return userMapper.toListInfosUserReponse(user);
+		return userMapper.toProfileResponse(user);
 	}
 
 

@@ -1,10 +1,11 @@
 package br.com.findyourplace.findyourplaces.mapper;
 
-import br.com.findyourplace.findyourplaces.controller.dto.response.UpdatedVehicleResponseDTO;
+import br.com.findyourplace.findyourplaces.controller.dto.response.UpdateVehicleResponseDTO;
 import org.springframework.stereotype.Component;
 
 import br.com.findyourplace.findyourplaces.controller.dto.request.CreateVehicleRequestDTO;
-import br.com.findyourplace.findyourplaces.controller.dto.response.CreateVehiclesResponseDTO;
+import br.com.findyourplace.findyourplaces.controller.dto.request.UpdateVehicleRequestDTO;
+import br.com.findyourplace.findyourplaces.controller.dto.response.CreateVehicleResponseDTO;
 import br.com.findyourplace.findyourplaces.controller.dto.response.ListVehiclesResponseDTO;
 import br.com.findyourplace.findyourplaces.entity.UserEntity;
 import br.com.findyourplace.findyourplaces.entity.VehicleEntity;
@@ -28,8 +29,8 @@ public class VehicleMapper {
         return vehicle;
     }
 
-    public CreateVehiclesResponseDTO toResponse(VehicleEntity vehicle) {
-        return new CreateVehiclesResponseDTO(
+	public CreateVehicleResponseDTO toResponse(VehicleEntity vehicle) {
+		return new CreateVehicleResponseDTO(
                 vehicle.getId(),
                 vehicle.getNickname(),
                 vehicle.getBrand(),
@@ -43,23 +44,9 @@ public class VehicleMapper {
                 vehicle.getCreatedAt()
         );
     }
-    
-    
-	public ListVehiclesResponseDTO toListInfosVehiclesReponse(VehicleEntity vehicle) {
-		
-		return new ListVehiclesResponseDTO(vehicle.getId(),
-										   vehicle.getNickname(),
-										   vehicle.getBrand(),
-										   vehicle.getModel(),
-										   vehicle.getYear(),
-										   vehicle.getFuelType(),
-										   vehicle.getCityConsumptionKmL(),
-										   vehicle.getHighwayConsumptionKmL(),
-										   vehicle.getTankCapacityLiters(),
-										   vehicle.getActive());
-	}
-	
-	public ListVehiclesResponseDTO toListById(VehicleEntity vehicle) {
+
+
+	public ListVehiclesResponseDTO toListResponse(VehicleEntity vehicle) {
 		
 		return new ListVehiclesResponseDTO(vehicle.getId(),
 										   vehicle.getNickname(),
@@ -73,9 +60,20 @@ public class VehicleMapper {
 										   vehicle.getActive());
 	}
 
-	public UpdatedVehicleResponseDTO toUpdatedResponse(VehicleEntity vehicle) {
+	public void updateEntity(UpdateVehicleRequestDTO dto, VehicleEntity vehicle) {
+		if (dto.nickname() != null) vehicle.setNickname(dto.nickname());
+		if (dto.brand() != null) vehicle.setBrand(dto.brand());
+		if (dto.model() != null) vehicle.setModel(dto.model());
+		if (dto.year() != null) vehicle.setYear(dto.year());
+		if (dto.fuelType() != null) vehicle.setFuelType(dto.fuelType());
+		if (dto.cityConsumptionKmL() != null) vehicle.setCityConsumptionKmL(dto.cityConsumptionKmL());
+		if (dto.highwayConsumptionKmL() != null) vehicle.setHighwayConsumptionKmL(dto.highwayConsumptionKmL());
+		if (dto.tankCapacityLiters() != null) vehicle.setTankCapacityLiters(dto.tankCapacityLiters());
+	}
 
-		return new UpdatedVehicleResponseDTO(
+	public UpdateVehicleResponseDTO toUpdateResponse(VehicleEntity vehicle) {
+
+		return new UpdateVehicleResponseDTO(
 				vehicle.getId(),
 				vehicle.getNickname(),
 				vehicle.getBrand(),

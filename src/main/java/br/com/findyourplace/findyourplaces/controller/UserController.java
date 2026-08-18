@@ -21,11 +21,24 @@ import br.com.findyourplace.findyourplaces.controller.dto.response.ListAllUsersR
 import br.com.findyourplace.findyourplaces.controller.dto.response.ListInfosUserDTO;
 import br.com.findyourplace.findyourplaces.controller.dto.response.ResponseAPIDefault;
 import br.com.findyourplace.findyourplaces.controller.dto.response.UpdateProfileInfosResponseDTO;
+import br.com.findyourplace.findyourplaces.exceptions.ExceptionResponse;
 import br.com.findyourplace.findyourplaces.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@Tag(name = "Usuários", description = "Cadastro, consulta e atualização de usuários")
+@SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT")
 public class UserController {
 
 	private final UserService userService;
@@ -36,8 +49,13 @@ public class UserController {
 	}
 
 	@PostMapping
-	public ResponseEntity<ResponseAPIDefault<CreateUserResponseDTO>> createUser(
-			@Valid @RequestBody CreateUserRequestDTO dto) {
+    @Operation(summary = "Cadastrar usuário", description = "Cria uma nova conta de usuário.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Usuário cadastrado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados de cadastro inválidos", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+            @ApiResponse(responseCode = "409", description = "Nome ou e-mail já cadastrado", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+    })
+    public ResponseEntity<ResponseAPIDefault<CreateUserResponseDTO>> createUser(@Valid @RequestBody CreateUserRequestDTO dto) {
 
 		var user = this.userService.createUser(dto);
 		var location = URI.create("/users/" + user.id());
@@ -47,8 +65,15 @@ public class UserController {
 
 	@PreAuthorize("hasAuthority('SCOPE_users:profile')")
 	@PatchMapping(path = "/me")
-	public ResponseEntity<ResponseAPIDefault<UpdateProfileInfosResponseDTO>> updateUser(JwtAuthenticationToken token,
-			@Valid @RequestBody UpdateUserRequestDTO dto) {
+    @Operation(summary = "Atualizar o próprio perfil", description = "Atualiza nome e/ou telefone do usuário autenticado.", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados de atualização inválidos", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Token ausente ou inválido", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Token sem o escopo users:profile", content = @Content)
+    })
+    public ResponseEntity<ResponseAPIDefault<UpdateProfileInfosResponseDTO>> updateUser(@Parameter(hidden = true) JwtAuthenticationToken token,
+                                                                                        @Valid @RequestBody UpdateUserRequestDTO dto) {
 
 		UUID userId = UUID.fromString(token.getToken().getSubject());
 		var user = this.userService.update(userId, dto);
@@ -58,11 +83,16 @@ public class UserController {
 
 	@PreAuthorize("hasAuthority('SCOPE_users:profile')")
 	@GetMapping(path = "/me")
-	public ResponseEntity<ResponseAPIDefault<ListInfosUserDTO>> listInfos(JwtAuthenticationToken token) {
+    @Operation(summary = "Consultar o próprio perfil", description = "Retorna os dados do usuário autenticado.", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Usuário encontrado"),
+            @ApiResponse(responseCode = "401", description = "Token ausente ou inválido", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Token sem o escopo users:profile", content = @Content)
+    })
+    public ResponseEntity<ResponseAPIDefault<ListInfosUserDTO>> findProfile(@Parameter(hidden = true) JwtAuthenticationToken token) {
+        UUID userId = UUID.fromString(token.getToken().getSubject());
 
-	    UUID userId = UUID.fromString(token.getToken().getSubject());
-
-	    var user = this.userService.listInfos(userId);
+        var user = this.userService.findProfile(userId);
 
 	    return ResponseEntity
 	            .ok()
@@ -71,8 +101,16 @@ public class UserController {
 	                    user
 	            ));
 	}
-	@PreAuthorize("hasAuthority('SCOPE_users:read')")
+
+
+    @PreAuthorize("hasAuthority('SCOPE_users:read')")
 	@GetMapping
+    @Operation(summary = "Listar usuários", description = "Retorna todos os usuários cadastrados.", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Usuários listados com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Token ausente ou inválido", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Token sem o escopo users:read", content = @Content)
+    })
 	public ResponseEntity<ResponseAPIDefault<List<ListAllUsersResponseDTO>>> listAll() {
 
 		return ResponseEntity.ok()
