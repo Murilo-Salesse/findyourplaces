@@ -9,7 +9,6 @@ import org.springframework.web.client.RestClient;
 @Configuration
 public class GeoapifyClientConfiguration {
 
-
     @Bean
     public RestClient geoapifyRestClient(RestClient.Builder clientBuilder,
                                          GeoapifyProperties geoapifyProperties) {
