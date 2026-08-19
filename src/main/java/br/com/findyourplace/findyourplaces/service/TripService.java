@@ -10,6 +10,7 @@ import br.com.findyourplace.findyourplaces.mapper.TripMapper;
 import br.com.findyourplace.findyourplaces.repository.TripRepository;
 import br.com.findyourplace.findyourplaces.repository.UserRepository;
 import br.com.findyourplace.findyourplaces.repository.VehicleRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -19,18 +20,21 @@ public class TripService {
 
     private final TripRepository tripRepository;
     private final TripMapper tripMapper;
+    private final TripPlanService tripPlanService;
     private final GeocodingService geocodingService;
     private final UserRepository userRepository;
     private final VehicleRepository vehicleRepository;
 
-    public TripService(TripRepository tripRepository, TripMapper tripMapper, GeocodingService geocodingService, UserRepository userRepository, VehicleRepository vehicleRepository) {
+    public TripService(TripRepository tripRepository, TripMapper tripMapper, TripPlanService tripPlanService, GeocodingService geocodingService, UserRepository userRepository, VehicleRepository vehicleRepository) {
         this.tripRepository = tripRepository;
         this.tripMapper = tripMapper;
+        this.tripPlanService = tripPlanService;
         this.geocodingService = geocodingService;
         this.userRepository = userRepository;
         this.vehicleRepository = vehicleRepository;
     }
 
+    @Transactional
     public CreateTripResponseDTO create(CreateTripRequestDTO req, UUID userId) {
 
         var user = findUserOrThrow(userId);
@@ -52,9 +56,9 @@ public class TripService {
 
         var savedTrip = tripRepository.save(trip);
 
+        tripPlanService.createPendingPlan(savedTrip);
         return tripMapper.toResponse(savedTrip);
     }
-
 
     private UserEntity findUserOrThrow(UUID userId) {
         return userRepository.findById(userId)
