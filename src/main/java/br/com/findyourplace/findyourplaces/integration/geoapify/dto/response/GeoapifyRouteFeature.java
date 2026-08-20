@@ -1,7 +1,7 @@
 package br.com.findyourplace.findyourplaces.integration.geoapify.dto.response;
 
-import tools.jackson.databind.JsonNode;
+import java.util.Map;
 
 public record GeoapifyRouteFeature(GeoapifyRouteProperties properties,
-                                   JsonNode geometry) {
+                                   Map<String, Object> geometry) {
 }

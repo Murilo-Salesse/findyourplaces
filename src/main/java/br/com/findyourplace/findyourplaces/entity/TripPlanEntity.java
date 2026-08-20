@@ -84,10 +84,6 @@ public class TripPlanEntity {
         return status;
     }
 
-    public void setStatus(TripPlanStatus status) {
-        this.status = status;
-    }
-
     public String getSummary() {
         return summary;
     }
@@ -142,5 +138,30 @@ public class TripPlanEntity {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public void startProcessing() {
+        if (this.status == TripPlanStatus.PROCESSING) {
+            throw new IllegalStateException("O planejamento já está sendo gerado..");
+        }
+
+        this.status = TripPlanStatus.PROCESSING;
+    }
+
+    public void fail() {
+        this.status = TripPlanStatus.FAILED;
+    }
+
+    public void complete(String summary,
+                         String aiRecommendation,
+                         BigDecimal estimatedTotalCost,
+                         BigDecimal remainingBudget) {
+        this.summary = summary;
+        this.aiRecommendation = aiRecommendation;
+        this.estimatedTotalCost = estimatedTotalCost;
+        this.remainingBudget = remainingBudget;
+        this.generatedAt = LocalDateTime.now();
+
+        this.status = TripPlanStatus.COMPLETED;
     }
 }

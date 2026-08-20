@@ -9,10 +9,11 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
-import tools.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -57,7 +58,7 @@ public class TripRouteEntity {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "geometry", columnDefinition = "jsonb", nullable = false)
-    private JsonNode geometry;
+    private Map<String, Object> geometry;
 
     @Column(name = "calculated_at", nullable = false)
     private LocalDateTime calculatedAt;
@@ -73,7 +74,7 @@ public class TripRouteEntity {
     public TripRouteEntity() {
     }
 
-    public TripRouteEntity(UUID id, TripPlanEntity tripPlan, RouteDirection direction, ExternalProvider externalProvider, RoutingMode transportMode, RouteType routeType, BigDecimal distanceMeters, Integer durationSeconds, Boolean hasTolls, Boolean hasFerry, JsonNode geometry, LocalDateTime calculatedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public TripRouteEntity(UUID id, TripPlanEntity tripPlan, RouteDirection direction, ExternalProvider externalProvider, RoutingMode transportMode, RouteType routeType, BigDecimal distanceMeters, Integer durationSeconds, Boolean hasTolls, Boolean hasFerry, Map<String, Object> geometry, LocalDateTime calculatedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.tripPlan = tripPlan;
         this.direction = direction;
@@ -170,11 +171,11 @@ public class TripRouteEntity {
         this.hasFerry = hasFerry;
     }
 
-    public JsonNode getGeometry() {
+    public Map<String, Object> getGeometry() {
         return geometry;
     }
 
-    public void setGeometry(JsonNode geometry) {
+    public void setGeometry(Map<String, Object> geometry) {
         this.geometry = geometry;
     }
 

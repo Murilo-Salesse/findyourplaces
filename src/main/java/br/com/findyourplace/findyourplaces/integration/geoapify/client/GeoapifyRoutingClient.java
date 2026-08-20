@@ -1,7 +1,9 @@
 package br.com.findyourplace.findyourplaces.integration.geoapify.client;
 
 import br.com.findyourplace.findyourplaces.configuration.GeoapifyProperties;
+import br.com.findyourplace.findyourplaces.enums.RoutingMode;
 import br.com.findyourplace.findyourplaces.exceptions.GeocodingUnavailableException;
+import br.com.findyourplace.findyourplaces.exceptions.RoutingUnavailableException;
 import br.com.findyourplace.findyourplaces.integration.geoapify.dto.response.GeoapifyRoutingResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResourceAccessException;
@@ -20,10 +22,12 @@ public class GeoapifyRoutingClient {
         this.geoapifyProperties = geoapifyProperties;
     }
 
+
     public GeoapifyRoutingResponse route(BigDecimal originLat,
                                          BigDecimal originLon,
                                          BigDecimal destinationLat,
-                                         BigDecimal destinationLon) {
+                                         BigDecimal destinationLon,
+                                         RoutingMode mode) {
         try {
             return restClient
                     .get()
@@ -35,13 +39,13 @@ public class GeoapifyRoutingClient {
                                             + "|" +
                                             destinationLat + "," + destinationLon
                             )
-                            .queryParam("mode", "drive")
+                            .queryParam("mode", mode == null ? RoutingMode.DRIVE.getDescription() : mode.getDescription())
                             .queryParam("apiKey", geoapifyProperties.apiKey())
                             .build())
                     .retrieve()
                     .body(GeoapifyRoutingResponse.class);
         } catch (ResourceAccessException ex) {
-            throw new GeocodingUnavailableException();
+            throw new RoutingUnavailableException();
         }
     }
 }

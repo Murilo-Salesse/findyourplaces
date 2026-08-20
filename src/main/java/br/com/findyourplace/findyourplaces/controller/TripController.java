@@ -3,6 +3,7 @@ package br.com.findyourplace.findyourplaces.controller;
 import br.com.findyourplace.findyourplaces.controller.dto.request.CreateTripRequestDTO;
 import br.com.findyourplace.findyourplaces.controller.dto.response.CreateTripResponseDTO;
 import br.com.findyourplace.findyourplaces.controller.dto.response.ResponseAPIDefault;
+import br.com.findyourplace.findyourplaces.controller.dto.response.TripPlanResponseDTO;
 import br.com.findyourplace.findyourplaces.service.TripPlanService;
 import br.com.findyourplace.findyourplaces.service.TripService;
 import jakarta.validation.Valid;
@@ -38,12 +39,12 @@ public class TripController {
 
     @PreAuthorize("hasAuthority('SCOPE_trips:write')")
     @PostMapping("/{tripId}/plan")
-    public ResponseEntity<ResponseAPIDefault<CreateTripResponseDTO>> generatePlan(@PathVariable("tripId") UUID tripId,
-                                                                                  JwtAuthenticationToken token) {
+    public ResponseEntity<ResponseAPIDefault<TripPlanResponseDTO>> generatePlan(@PathVariable("tripId") UUID tripId,
+                                                                                JwtAuthenticationToken token) {
 
         UUID userId = UUID.fromString(token.getToken().getSubject());
-        var trip = this.tripPlanService.generatePlan(tripId, userId);
+        var plan = this.tripPlanService.generatePlan(tripId, userId);
 
-        return ResponseEntity.ok().body(new ResponseAPIDefault<>("Viagem criada com sucesso", trip));
+        return ResponseEntity.ok().body(new ResponseAPIDefault<>("Planejamento gerado com sucesso", plan));
     }
 }
