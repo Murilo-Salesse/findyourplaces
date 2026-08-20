@@ -31,6 +31,7 @@ public class GeoapifyClient {
                     .retrieve()
                     .body(GeoapifyResponse.class);
         } catch (ResourceAccessException ex) {
+            ex.printStackTrace(); // 👈 Isso vai imprimir o erro exato e a causa raiz no console da IDE
             throw new GeocodingUnavailableException();
         }
     }

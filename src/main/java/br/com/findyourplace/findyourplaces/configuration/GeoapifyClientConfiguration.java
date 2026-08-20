@@ -16,6 +16,9 @@ public class GeoapifyClientConfiguration {
         return clientBuilder
                 .baseUrl(geoapifyProperties.baseUrl())
                 .defaultStatusHandler(HttpStatusCode::isError, ((request, response) -> {
+                    System.out.println("Status retornado pelo Geoapify: " + response.getStatusCode());
+                    System.out.println("URL chamada: " + request.getURI());
+                    System.out.println("Corpo do erro: " + new String(response.getBody().readAllBytes()));
                     throw new GeocodingUnavailableException();
                 }))
                 .build();

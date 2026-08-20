@@ -45,6 +45,7 @@ public class GeoapifyRoutingClient {
                     .retrieve()
                     .body(GeoapifyRoutingResponse.class);
         } catch (ResourceAccessException ex) {
+            ex.printStackTrace(); // 👈 Isso vai imprimir o erro exato e a causa raiz no console da IDE
             throw new RoutingUnavailableException();
         }
     }
