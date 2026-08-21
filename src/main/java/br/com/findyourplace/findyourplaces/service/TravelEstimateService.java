@@ -1,8 +1,13 @@
 package br.com.findyourplace.findyourplaces.service;
 
+import br.com.findyourplace.findyourplaces.entity.TravelEstimateEntity;
 import br.com.findyourplace.findyourplaces.entity.TripEntity;
+import br.com.findyourplace.findyourplaces.entity.TripPlanEntity;
+import br.com.findyourplace.findyourplaces.mapper.TravelEstimateMapper;
+import br.com.findyourplace.findyourplaces.repository.TravelEstimateRepository;
 import br.com.findyourplace.findyourplaces.service.model.CalculatedRoute;
 import br.com.findyourplace.findyourplaces.service.model.TravelEstimate;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -10,6 +15,14 @@ import java.math.RoundingMode;
 
 @Service
 public class TravelEstimateService {
+
+    private final TravelEstimateRepository travelEstimateRepository;
+    private final TravelEstimateMapper travelEstimateMapper;
+
+    public TravelEstimateService(TravelEstimateRepository travelEstimateRepository, TravelEstimateMapper travelEstimateMapper) {
+        this.travelEstimateRepository = travelEstimateRepository;
+        this.travelEstimateMapper = travelEstimateMapper;
+    }
 
     private static final BigDecimal DEFAULT_FUEL_PRICE_PER_LITER = BigDecimal.valueOf(5.89);
 
@@ -55,5 +68,26 @@ public class TravelEstimateService {
                 route.hasTolls(),
                 route.hasFerry()
         );
+    }
+
+    @Transactional
+    public TravelEstimateEntity save(TripPlanEntity tripPlan,
+                                     TravelEstimate estimate,
+                                     TripEntity trip) {
+
+        BigDecimal fuelConsumptionKmL = null;
+
+        if (trip.getVehicle() != null) {
+            fuelConsumptionKmL = trip.getVehicle().getHighwayConsumptionKmL();
+        }
+
+        var entity = travelEstimateMapper.toEntity(
+                tripPlan,
+                estimate,
+                DEFAULT_FUEL_PRICE_PER_LITER,
+                fuelConsumptionKmL
+        );
+
+        return travelEstimateRepository.save(entity);
     }
 }

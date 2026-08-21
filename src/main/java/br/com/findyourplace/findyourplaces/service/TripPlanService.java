@@ -72,6 +72,8 @@ public class TripPlanService {
         // 6. Realiza os cálculos matemáticos e estimativas financeiras
         var estimate = travelEstimateService.calculate(trip, outboundRoute);
 
+        travelEstimateService.save(tripPlan, estimate, trip);
+
         // 7. Monta o prompt de contexto estruturado para a IA
         var contextPrompt = tripPlanContextService.build(trip, outboundRoute, estimate);
 
